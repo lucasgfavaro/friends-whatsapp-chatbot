@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Service
-public class FriendChatAssistant {
+public class FriendChatbotService {
 
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
@@ -25,7 +25,7 @@ public class FriendChatAssistant {
     private final String PREVIOUS_MESSAGES_CONTEXT = "CONTEXTO MENSAJES ANTERIORES";
     private final String FRIEND_CALLING_CONTEXT = "CONTEXTO NOMBRES AMIGOS";
 
-    public FriendChatAssistant(ChatClient.Builder builder, VectorStore vectorStore //            , ChatMemory chatMemory
+    public FriendChatbotService(ChatClient.Builder builder, VectorStore vectorStore //            , ChatMemory chatMemory
     ) {
         this.vectorStore = vectorStore;
         this.chatClient = builder
@@ -39,7 +39,7 @@ public class FriendChatAssistant {
                 .build();
     }
 
-    public String chat(String chatId, String fromFriend, String toFriend, String topic) {
+    public String askQuestion(String fromFriend, String toFriend, String topic) {
         String prompt = getSystemContext(fromFriend) + "\n\n"
                 //+ getPreviousMessagesContext(toFriend, topic) + "\n\n"
                 //+ getFriendWhoIsAskingContext(fromFriend) + "\n\n"
@@ -143,6 +143,10 @@ public class FriendChatAssistant {
         }
 
         return resultado.toString();
+    }
+
+    public String generateConversation(String topic) {
+        return null;
     }
 
     //        return this.chatClient

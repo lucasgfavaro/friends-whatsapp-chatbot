@@ -1,4 +1,4 @@
-package com.lgf.chatbotamigo.controller;
+package com.lgf.chatbotamigo.model;
 
 import lombok.Getter;
 

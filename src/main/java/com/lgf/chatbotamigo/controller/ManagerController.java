@@ -1,13 +1,11 @@
 package com.lgf.chatbotamigo.controller;
 
-import com.lgf.chatbotamigo.service.ChatEmbeddingService;
-import com.lgf.chatbotamigo.service.ChatService;
+import com.lgf.chatbotamigo.model.TokenResponse;
+import com.lgf.chatbotamigo.service.ManagerService;
+import jakarta.websocket.server.PathParam;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -16,26 +14,24 @@ import java.io.IOException;
 @RequestMapping("/manager")
 public class ManagerController {
 
-    private final ChatEmbeddingService chatEmbeddingService;
-    private final ChatService chatService;
+    private final ManagerService managerService;
 
-    public ManagerController(ChatEmbeddingService chatEmbeddingService, ChatService chatService) {
-        this.chatEmbeddingService = chatEmbeddingService;
-        this.chatService = chatService;
+    public ManagerController(ManagerService managerService) {
+        this.managerService = managerService;
     }
 
-    @PostMapping("/upload-chat")
-    public ResponseEntity<String> uploadChat(@RequestParam String file) {
-        try {
-            chatEmbeddingService.processAndStoreChat(file);
-            return ResponseEntity.ok("Chat procesado y almacenado en Pinecone");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error procesando el chat: " + e.getMessage());
-        }
+    @PostMapping("/whatsapp-file-embedding")
+    public void chunkChat(@RequestParam String whatsappExportedFile, @RequestParam String plan) throws IOException {
+        managerService.process(whatsappExportedFile, Boolean.parseBoolean(plan));
     }
 
-    @PostMapping("/chunk-chat")
-    public void chunkChat(@RequestParam String file) throws IOException {
-        chatService.processChat(file);
+    @PostMapping("/text-tokenize")
+    public ResponseEntity<TokenResponse> tokenizeText(@RequestBody String text) {
+        return ResponseEntity.ok(managerService.tokenize(text));
+    }
+
+    @GetMapping("/file-tokenize")
+    public ResponseEntity<Long> tokenizeFile(@PathParam("filename") String filename) {
+        return ResponseEntity.ok(managerService.tokenizeFile(filename));
     }
 }

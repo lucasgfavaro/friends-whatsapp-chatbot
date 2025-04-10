@@ -1,13 +1,11 @@
-package com.lgf.chatbotamigo.service;
+package com.lgf.chatbotamigo.util;
 
 import com.lgf.chatbotamigo.model.Message;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,7 +16,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,12 +30,7 @@ public class WhatsappChunker {
     );
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("d/M/yyyy H:mm");
 
-    private static final Pattern SISTEMA_PATTERN = Pattern.compile(
-            "^(\\d{1,2}/\\d{1,2}/\\d{4}), (\\d{1,2}:\\d{2}) - (.*)$"
-    );
-
     public static List<Chunk> chunkChat(String filename) throws IOException {
-
         List<String> lines = getStringLinesFrom(filename);
         List<Message> messages = parseMessages(lines);
         return buildChunks(messages);
@@ -108,7 +100,8 @@ public class WhatsappChunker {
                 linea.contains("cambió el ícono") ||
                 linea.contains("te añadió") ||
                 linea.contains("están cifrados") ||
-                linea.contains("<Multimedia omitido>") ||
+                linea.contains("Multimedia omitido") ||
+                linea.contains("Se eliminó este mensaje") ||
                 !linea.contains(":")) {
             return true;
         }
